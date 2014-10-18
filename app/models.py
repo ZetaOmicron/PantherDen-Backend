@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, Date
 
 from app import Base, engine
+import json
 
 
 class Student(Base):
@@ -11,14 +12,31 @@ class Student(Base):
     lastname = Column(String(50))
     homeroomid = Column(Integer)
 
+    def to_dict(self):
+        return {"id": self.id,
+                "firstname": self.firstname,
+                "lastname": self.lastname,
+                "homeroomid": self.homeroomid}
+
+    def __repr__(self):
+        return "<Student %r>" % self.id
 
 class Teacher(Base):
     __tablename__ = "teachers"
 
-    id = Column(Integer, primary_key=True)
+    id = Column(String(30), primary_key=True)
     firstname = Column(String(50))
     lastname = Column(String(50))
     roomid = Column(Integer)
+
+    def to_dict(self):
+        return {"id": self.id,
+                "firstname": self.firstname,
+                "lastname": self.lastname,
+                "roomid": self.roomid}
+
+    def __repr__(self):
+        return "<Teacher %r>" % self.id
 
 
 class Schedule(Base):
@@ -29,8 +47,13 @@ class Schedule(Base):
     newroomid = Column(Integer)
     homeroomid = Column(Integer)
 
-print Student.__table__
-print Teacher.__table__
-print Schedule.__table__
+    def to_dict(self):
+        return {"studentid": self.studentid,
+                "date": self.date,
+                "newroomid": self.newroomid,
+                "homeroomid": self.homeroomid}
+
+    def __repr__(self):
+        return "<Schedule %r, %r>" % self.studentid, self.date
 
 Base.metadata.create_all(engine)

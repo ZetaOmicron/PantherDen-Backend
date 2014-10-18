@@ -13,5 +13,6 @@ app = falcon.API()
 
 import routes as rs
 
+app.add_route("/teachers/", rs.Teachers())
 app.add_route("/teacher/{teacherid}/", rs.Teacher())
-app.add_route("/teacher/{teacherid}/students/today", rs.StudentsWithTeacherToday())
+app.add_route("/teacher/{teacherid}/students/today/", rs.StudentsWithTeacherToday())

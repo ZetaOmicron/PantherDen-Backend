@@ -21,10 +21,18 @@ class Teacher():
             return
         resp.status = falcon.HTTP_200
         resp.content_type = "application/json"
-        resp.body = json.dumps({"id": teacher.id,
-                                "firstname": teacher.firstname,
-                                "lastname": teacher.lastname,
-                                "roomid": teacher.roomid})
+        resp.body = json.dumps(teacher.to_dict())
+
+
+class Teachers():
+
+    def on_get(self, req, resp):
+        teachers = session.query(ms.Teacher).all()
+        resp.status = falcon.HTTP_200
+        resp.content_type = "application/json"
+        #resp.body = json.dumps({[teacher.to_dict() for teacher in teachers]})
+        resp.body = json.dumps([teacher.to_dict() for teacher in teachers])
+
 
 # I put my id in: I want to see what students are in my class today
 #/<teachid>/
