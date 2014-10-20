@@ -1,7 +1,5 @@
 from sqlalchemy import Column, Integer, String, Date
-
 from app import Base, engine
-import json
 
 
 class Student(Base):
@@ -20,6 +18,7 @@ class Student(Base):
 
     def __repr__(self):
         return "<Student %r>" % self.id
+
 
 class Teacher(Base):
     __tablename__ = "teachers"

@@ -56,3 +56,6 @@ target/
 # IntelliJ
 PantherDen-Backend.iml
 .idea/
+
+# PantherDen-Backend
+pden.db
