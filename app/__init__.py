@@ -9,10 +9,13 @@ Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 session = Session()
 
-app = falcon.API()
+import hooks as hs
+
+app = falcon.API(before=[hs.set_access_origin])
 
 import models
 import routes as rs
+
 
 app.add_route("/students/", rs.Students())
 app.add_route("/student/{studentid}/", rs.Student())
