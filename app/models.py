@@ -10,6 +10,12 @@ class Student(Base):
     lastname = Column(String(50))
     homeroomid = Column(Integer)
 
+    def __init__(self, id, firstname, lastname, homeroomid):
+        self.id = id
+        self.firstname = firstname
+        self.lastname = lastname
+        self.homeroomid = homeroomid
+
     def to_dict(self):
         return {"id": self.id,
                 "firstname": self.firstname,
@@ -28,6 +34,12 @@ class Teacher(Base):
     lastname = Column(String(50))
     roomid = Column(Integer)
 
+    def __init__(self, id, firstname, lastname, roomid):
+        self.id = id
+        self.firstname = firstname
+        self.lastname = lastname
+        self.roomid = roomid
+
     def to_dict(self):
         return {"id": self.id,
                 "firstname": self.firstname,
@@ -45,6 +57,12 @@ class Schedule(Base):
     date = Column(Date, primary_key=True)
     newroomid = Column(Integer)
     homeroomid = Column(Integer)
+
+    def __init__(self, studentid, date, newroomid, homeroomid):
+        self.studentid = studentid
+        self.date = date
+        self.newroomid = newroomid
+        self.homeroomid = homeroomid
 
     def to_dict(self):
         return {"studentid": self.studentid,
