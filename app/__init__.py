@@ -11,7 +11,7 @@ session = Session()
 
 import hooks as hs
 
-app = falcon.API(before=[hs.set_access_origin])
+app = falcon.API(media_type="application/json", before=[hs.set_access_origin])
 
 import models
 import routes as rs

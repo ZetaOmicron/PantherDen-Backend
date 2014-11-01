@@ -20,7 +20,6 @@ class Student():
             resp.body = "A student with the id of %s was not found." % studentid
             return
         resp.status = falcon.HTTP_200
-        resp.content_type = "application/json"
         resp.body = json.dumps(student.to_dict())
 
 
@@ -29,7 +28,6 @@ class Students():
     def on_get(self, req, resp):
         students = sess.query(ms.Student).all()
         resp.status = falcon.HTTP_200
-        resp.content_type = "application/json"
         resp.body = json.dumps([student.to_dict() for student in students])
 
 
@@ -42,7 +40,6 @@ class Teacher():
             resp.body = "A teacher with the id of %s was not found." % teacherid
             return
         resp.status = falcon.HTTP_200
-        resp.content_type = "application/json"
         resp.body = json.dumps(teacher.to_dict())
 
 
@@ -51,7 +48,6 @@ class Teachers():
     def on_get(self, req, resp):
         teachers = sess.query(ms.Teacher).all()
         resp.status = falcon.HTTP_200
-        resp.content_type = "application/json"
         resp.body = json.dumps([teacher.to_dict() for teacher in teachers])
 
 
@@ -71,7 +67,6 @@ class TeacherStudentsHomeroom():
         roomid = teacher.roomid
         students = sess.query(ms.Student).filter_by(homeroomid=roomid)
         resp.status = falcon.HTTP_200
-        resp.content_type = "application/json"
         resp.body = json.dumps([student.to_dict() for student in students])
 
 
@@ -109,7 +104,6 @@ class Schedules():
     def on_get(self, req, resp):
         schedules = sess.query(ms.Schedule).all()
         resp.status = falcon.HTTP_200
-        resp.content_type = "application/json"
         resp.body = json.dumps([schedule.to_dict() for schedule in schedules])
 
 
@@ -119,5 +113,4 @@ class SchedulesToday():
         today = datetime.datetime.today()
         schedules = sess.query(ms.Schedule).filter_by(date=today)
         resp.status = falcon.HTTP_200
-        resp.content_type = "application/json"
         resp.body = json.dumps([schedule.to_dict() for schedule in schedules])
