@@ -31,6 +31,35 @@ class Students():
         resp.body = json.dumps([student.to_dict() for student in students])
 
 
+class StudentCompleteSearch():
+
+    def on_get(self, req, resp):
+        field = req.get_param("f")
+        if not (field in ms.Student.completable):
+            resp.status = falcon.HTTP_400
+            resp.body = "Invalid Field"
+            return
+        mf = getattr(ms.Student, field)
+        toq = req.get_param("q")
+        if toq is None:
+            resp.status = falcon.HTTP_400
+            resp.body = "No Query Found"
+            return
+        page = req.get_param("p")
+        page = int(page) if page else 1
+        query = sess.query(ms.Student).filter(mf.like("%s%%" % toq))
+        count = query.count()
+        if (page-1)*10 > count:
+            resp.status = falcon.HTTP_404
+            resp.body = "Page not found"
+            return
+        resp.status = falcon.HTTP_200
+        resp.body = json.dumps({"students": [student.to_dict() for student in
+                                             query.order_by(mf).slice((page-1)*10, page*10).all()],
+                                "page": page,
+                                "amount": count})
+
+
 class Teacher():
 
     def on_get(self, req, resp, teacherid):
@@ -54,12 +83,7 @@ class Teachers():
 class TeacherStudentsHomeroom():
 
     def on_get(self, req, resp, teacherid):
-        if not teacherid.isdigit():
-            resp.status = falcon.HTTP_404
-            resp.body = "Invalid teacher id"
-            return
-        tid = int(teacherid)
-        teacher = sess.query(ms.Teacher).get(tid)
+        teacher = sess.query(ms.Teacher).get(teacherid)
         if teacher is None:
             resp.status = falcon.HTTP_404
             resp.body = "A teacher with the idea of %s was not found." % teacherid
@@ -75,12 +99,7 @@ class TeacherStudentsHomeroom():
 class TeacherStudentsToday():
 
     def on_get(self, req, resp, teacherid):
-        if not teacherid.isdigit():
-            resp.status = falcon.HTTP_404
-            resp.body = "Invalid teacher id"
-            return
-        tid = int(teacherid)
-        teacher = sess.query(ms.Teacher).get(tid)
+        teacher = sess.query(ms.Teacher).get(teacherid)
         if teacher is None:
             resp.status = falcon.HTTP_404
             resp.body = "A teacher with the idea of %s was not found." % teacherid
@@ -91,6 +110,35 @@ class TeacherStudentsToday():
         removedscheds = sess.query(ms.Schedule).filter_by(oldroomid=roomid, date=today)
         newscheds = sess.query(ms.Schedule).filter_by(newroomid=roomid, date=today)
         resp.body = "hello"
+
+
+class TeacherCompleteSearch():
+
+    def on_get(self, req, resp):
+        field = req.get_param("f")
+        if not (field in ms.Teacher.completable):
+            resp.status = falcon.HTTP_400
+            resp.body = "Invalid Field"
+            return
+        mf = getattr(ms.Teacher, field)
+        toq = req.get_param("q")
+        if toq is None:
+            resp.status = falcon.HTTP_400
+            resp.body = "No Query Found"
+            return
+        page = req.get_param("p")
+        page = int(page) if page else 1
+        query = sess.query(ms.Teacher).filter(mf.like("%s%%" % toq))
+        count = query.count()
+        if (page-1)*10 > count:
+            resp.status = falcon.HTTP_404
+            resp.body = "Page not found"
+            return
+        resp.status = falcon.HTTP_200
+        resp.body = json.dumps({"teachers": [teacher.to_dict() for teacher in
+                                             query.order_by(mf).slice((page-1)*10, page*10).all()],
+                                "page": page,
+                                "amount": count})
 
 
 class Schedule():
