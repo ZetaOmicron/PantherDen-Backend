@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, Date
-from app import Base, engine
+from app import Base
 
 
 class Student(Base):
@@ -9,6 +9,8 @@ class Student(Base):
     firstname = Column(String(50))
     lastname = Column(String(50))
     homeroomid = Column(Integer)
+
+    completable = ["firstname", "lastname"]
 
     def __init__(self, id, firstname, lastname, homeroomid):
         self.id = id
@@ -34,6 +36,8 @@ class Teacher(Base):
     lastname = Column(String(50))
     roomid = Column(Integer)
 
+    completable = ["firstname", "lastname"]
+
     def __init__(self, id, firstname, lastname, roomid):
         self.id = id
         self.firstname = firstname
@@ -55,7 +59,7 @@ class Schedule(Base):
 
     studentid = Column(Integer, primary_key=True)
     date = Column(Date, primary_key=True)
-    newroomid = Column(Integer)
+    newroomid = Column(Integer, primary_key=True)
     homeroomid = Column(Integer)
 
     def __init__(self, studentid, date, newroomid, homeroomid):
@@ -66,11 +70,16 @@ class Schedule(Base):
 
     def to_dict(self):
         return {"studentid": self.studentid,
-                "date": self.date,
+                "date": str(self.date),
                 "newroomid": self.newroomid,
                 "homeroomid": self.homeroomid}
 
     def __repr__(self):
         return "<Schedule %r, %r>" % self.studentid, self.date
 
-Base.metadata.create_all(engine)
+
+def create_metadata(engine):
+    Base.metadata.create_all(engine)
+
+def drop_metadata(engine):
+    Base.metadata.drop_all(engine)

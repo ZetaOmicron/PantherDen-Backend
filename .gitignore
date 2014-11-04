@@ -59,3 +59,5 @@ PantherDen-Backend.iml
 
 # PantherDen-Backend
 pden.db
+testpden.db
+testdata.py
