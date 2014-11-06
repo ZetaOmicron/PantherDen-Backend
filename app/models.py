@@ -8,7 +8,7 @@ class Student(Base):
     id = Column(Integer, primary_key=True)
     firstname = Column(String(50))
     lastname = Column(String(50))
-    homeroomid = Column(Integer)
+    homeroomid = Column(String(6))
 
     completable = ["firstname", "lastname"]
 
@@ -34,7 +34,7 @@ class Teacher(Base):
     id = Column(String(30), primary_key=True)
     firstname = Column(String(50))
     lastname = Column(String(50))
-    roomid = Column(Integer)
+    roomid = Column(String(6))
 
     completable = ["firstname", "lastname"]
 
@@ -59,8 +59,8 @@ class Schedule(Base):
 
     studentid = Column(Integer, primary_key=True)
     date = Column(Date, primary_key=True)
-    newroomid = Column(Integer, primary_key=True)
-    homeroomid = Column(Integer)
+    newroomid = Column(String(6), primary_key=True)
+    homeroomid = Column(String(6))
 
     def __init__(self, studentid, date, newroomid, homeroomid):
         self.studentid = studentid
@@ -80,6 +80,7 @@ class Schedule(Base):
 
 def create_metadata(engine):
     Base.metadata.create_all(engine)
+
 
 def drop_metadata(engine):
     Base.metadata.drop_all(engine)
