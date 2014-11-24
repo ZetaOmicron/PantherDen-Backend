@@ -1,81 +1,84 @@
-from sqlalchemy import Column, Integer, String, Date
+from sqlalchemy import Column, Integer, String, Date, ForeignKey
+from sqlalchemy.orm import relationship
 from app import Base
 
 
 class Student(Base):
-    __tablename__ = "students"
+    __tablename__ = "student"
 
     id = Column(Integer, primary_key=True)
-    firstname = Column(String(50))
-    lastname = Column(String(50))
-    homeroomid = Column(String(6))
+    first_name = Column(String(50))
+    last_name = Column(String(50))
+    home_room_teacher_id = Column(String(30), ForeignKey("teacher.id"))
 
-    completable = ["firstname", "lastname"]
+    schedules = relationship("Schedule", backref="student")
 
-    def __init__(self, id, firstname, lastname, homeroomid):
+    completable = ["first_name", "last_name"]
+
+    def __init__(self, id, first_name, last_name, home_room_teacher_id):
         self.id = id
-        self.firstname = firstname
-        self.lastname = lastname
-        self.homeroomid = homeroomid
+        self.first_name = first_name
+        self.last_name = last_name
+        self.home_room_teacher_id = home_room_teacher_id
 
     def to_dict(self):
         return {"id": self.id,
-                "firstname": self.firstname,
-                "lastname": self.lastname,
-                "homeroomid": self.homeroomid}
+                "first_name": self.first_name,
+                "last_name": self.last_name,
+                "home_room_teacher_id": self.home_room_teacher_id}
 
     def __repr__(self):
         return "<Student %r>" % self.id
 
 
 class Teacher(Base):
-    __tablename__ = "teachers"
+    __tablename__ = "teacher"
 
     id = Column(String(30), primary_key=True)
-    firstname = Column(String(50))
-    lastname = Column(String(50))
-    roomid = Column(String(6))
+    first_name = Column(String(50))
+    last_name = Column(String(50))
+    room_id = Column(String(6))
 
-    completable = ["firstname", "lastname"]
+    home_room_students = relationship("Student", backref="teacher")
+    schedules = relationship("Schedule", backref="teacher")
 
-    def __init__(self, id, firstname, lastname, roomid):
+    completable = ["first_name", "last_name"]
+
+    def __init__(self, id, first_name, last_name, room_id):
         self.id = id
-        self.firstname = firstname
-        self.lastname = lastname
-        self.roomid = roomid
+        self.first_name = first_name
+        self.last_name = last_name
+        self.room_id = room_id
 
     def to_dict(self):
         return {"id": self.id,
-                "firstname": self.firstname,
-                "lastname": self.lastname,
-                "roomid": self.roomid}
+                "firstname": self.first_name,
+                "lastname": self.last_name,
+                "roomid": self.room_id}
 
     def __repr__(self):
         return "<Teacher %r>" % self.id
 
 
 class Schedule(Base):
-    __tablename__ = "schedules"
+    __tablename__ = "schedule"
 
-    studentid = Column(Integer, primary_key=True)
-    oldteacherid = Column(String(6))
-    newteacherid = Column(String(6), primary_key=True)
+    student_id = Column(Integer, ForeignKey("student.id"), primary_key=True)
+    teacher_id = Column(String(30), ForeignKey("teacher.id"), primary_key=True)
     date = Column(Date, primary_key=True)
 
-    def __init__(self, studentid, oldteacherid, newteacherid, date):
-        self.studentid = studentid
-        self.oldteacherid = oldteacherid
-        self.newteacherid = newteacherid
+    def __init__(self, student_id, teacher_id, date):
+        self.student_id = student_id
+        self.teacher_id = teacher_id
         self.date = date
 
     def to_dict(self):
-        return {"studentid": self.studentid,
-                "oldteacherid": self.oldteacherid,
-                "newteacherid": self.newteacherid,
+        return {"student_id": self.student_id,
+                "teacher_id": self.teacher_id,
                 "date": str(self.date)}
 
     def __repr__(self):
-        return "<Schedule %r, %r>" % self.studentid, self.date
+        return "<Schedule %r, %r, %r>" % self.student_id, self.teacher_id, self.date
 
 
 def create_metadata(engine):
