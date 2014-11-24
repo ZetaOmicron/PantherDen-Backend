@@ -58,21 +58,21 @@ class Schedule(Base):
     __tablename__ = "schedules"
 
     studentid = Column(Integer, primary_key=True)
+    oldteacherid = Column(String(6))
+    newteacherid = Column(String(6), primary_key=True)
     date = Column(Date, primary_key=True)
-    newroomid = Column(String(6), primary_key=True)
-    homeroomid = Column(String(6))
 
-    def __init__(self, studentid, date, newroomid, homeroomid):
+    def __init__(self, studentid, oldteacherid, newteacherid, date):
         self.studentid = studentid
+        self.oldteacherid = oldteacherid
+        self.newteacherid = newteacherid
         self.date = date
-        self.newroomid = newroomid
-        self.homeroomid = homeroomid
 
     def to_dict(self):
         return {"studentid": self.studentid,
-                "date": str(self.date),
-                "newroomid": self.newroomid,
-                "homeroomid": self.homeroomid}
+                "oldteacherid": self.oldteacherid,
+                "newteacherid": self.newteacherid,
+                "date": str(self.date)}
 
     def __repr__(self):
         return "<Schedule %r, %r>" % self.studentid, self.date

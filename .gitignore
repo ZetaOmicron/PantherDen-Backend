@@ -58,6 +58,5 @@ PantherDen-Backend.iml
 .idea/
 
 # PantherDen-Backend
-pden.db
-testpden.db
-testdata.py
+*.db
+test_data/*.csv

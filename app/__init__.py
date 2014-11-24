@@ -11,16 +11,17 @@ import models
 
 if test_run:
     models.drop_metadata(engine)
+
 models.create_metadata(engine)
 
 Session = sessionmaker(bind=engine)
 session = Session()
 
 if test_run:
-    import testdata
-    session.add_all(testdata.students)
-    session.add_all(testdata.teachers)
-    session.add_all(testdata.schedules)
+    from test_data import students, teachers, schedules
+    session.add_all(students)
+    session.add_all(teachers)
+    session.add_all(schedules)
     session.commit()
 
 import hooks as hs
