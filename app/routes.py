@@ -88,14 +88,11 @@ class TeacherStudentsHomeroom():
             resp.status = falcon.HTTP_404
             resp.body = "A teacher with the idea of %s was not found." % teacherid
             return
-        roomid = teacher.roomid
-        students = sess.query(ms.Student).filter_by(homeroomid=roomid)
         resp.status = falcon.HTTP_200
-        resp.body = json.dumps([student.to_dict() for student in students])
+        resp.body = json.dumps([student.to_dict() for student in teacher.home_room_students])
 
 
-# I put my id in: I want to see what students are in my class today
-#/<teachid>/
+# TODO Fix this... it's not working
 class TeacherStudentsToday():
 
     def on_get(self, req, resp, teacherid):
@@ -104,12 +101,17 @@ class TeacherStudentsToday():
             resp.status = falcon.HTTP_404
             resp.body = "A teacher with the idea of %s was not found." % teacherid
             return
-        roomid = teacher.roomid
         today = datetime.date.today()
-        default = sess.query(ms.Student).filter_by(homeroomid=roomid)
-        removedscheds = sess.query(ms.Schedule).filter_by(oldroomid=roomid, date=today)
-        newscheds = sess.query(ms.Schedule).filter_by(newroomid=roomid, date=today)
-        resp.body = "hello"
+        default = teacher.home_room_students
+        removedstudents = sess.query(ms.Schedule).filter(ms.Student.home_room_teacher_id == teacherid,
+                                                         ms.Schedule.date == today)
+        default = default.outerjoin(removedstudents)
+        newstudents = sess.query(ms.Schedule).filter(ms.Schedule.teacher_id == teacherid,
+                                                     ms.Schedule.date == today)
+        resp.status = falcon.HTTP_200
+        resp.body = json.dumps({"moved": [student.to_dict() for student in removedstudents],
+                                "default": [student.to_dict() for student in default],
+                                "new": [student.to_dict() for student in newstudents]})
 
 
 class TeacherCompleteSearch():
@@ -143,7 +145,7 @@ class TeacherCompleteSearch():
 
 class Schedule():
 
-    def on_get(self, req, resp, studentid, date):
+    def on_get(self, req, resp, student_id, new_teacher_id, date):
         pass
 
 
@@ -162,3 +164,27 @@ class SchedulesToday():
         schedules = sess.query(ms.Schedule).filter_by(date=today)
         resp.status = falcon.HTTP_200
         resp.body = json.dumps([schedule.to_dict() for schedule in schedules])
+
+
+class SchedulesOnDate():
+
+    def on_get(self, req, resp, date):
+        schedules = sess.query(ms.Schedule).filter_by(date=datetime.datetime.strptime(date, "%m-%d-%y"))
+        resp.status = falcon.HTTP_200
+        resp.body = json.dumps([schedule.to_dict() for schedule in schedules])
+
+
+class SchedulesWithStudent():
+
+    def on_get(self, req, resp, studentid):
+        schedules = sess.query(ms.Schedule).filter_by(student_id=studentid)
+        resp.status = falcon.HTTP_200
+        resp.body = json.dumps([schedule.to_dict() for schedule in schedules])
+
+class SchedulesWithHomeRoomTeacher():
+
+    def on_get(self, req, resp, studentid):
+        schedules = sess.query(ms.Schedule).filter_by(student_id=studentid)
+        resp.status = falcon.HTTP_200
+        resp.body = json.dumps([schedule.to_dict() for schedule in schedules])
+

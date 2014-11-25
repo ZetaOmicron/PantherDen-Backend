@@ -42,3 +42,5 @@ app.add_route("/teacher/search/", rs.TeacherCompleteSearch())
 
 app.add_route("/schedules/", rs.Schedules())
 app.add_route("/schedules/today", rs.SchedulesToday())
+app.add_route("/schedules/date/{date}", rs.SchedulesOnDate())
+app.add_route("/schedules/student/{studentid}", rs.SchedulesWithStudent())
