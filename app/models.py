@@ -52,9 +52,9 @@ class Teacher(Base):
 
     def to_dict(self):
         return {"id": self.id,
-                "firstname": self.first_name,
-                "lastname": self.last_name,
-                "roomid": self.room_id}
+                "first_name": self.first_name,
+                "last_name": self.last_name,
+                "room_id": self.room_id}
 
     def __repr__(self):
         return "<Teacher %r>" % self.id
