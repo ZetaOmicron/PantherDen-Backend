@@ -6,6 +6,10 @@ import models as ms
 from app import session as sess
 
 
+def convert_time(s):
+    return datetime.datetime.strptime(s, "%m-%d-%y").date()
+
+
 class Student():
 
     def on_get(self, req, resp, studentid):
@@ -92,7 +96,6 @@ class TeacherStudentsHomeroom():
         resp.body = json.dumps([student.to_dict() for student in teacher.home_room_students])
 
 
-# TODO Fix this... it's not working
 class TeacherStudentsToday():
 
     def on_get(self, req, resp, teacherid):
@@ -108,6 +111,27 @@ class TeacherStudentsToday():
         default = [e for e in default if e not in removedstudents]
         newstudents = sess.query(ms.Student).join(ms.Schedule).filter(ms.Schedule.teacher_id == teacherid,
                                                                       ms.Schedule.date == today)
+        resp.status = falcon.HTTP_200
+        resp.body = json.dumps({"moved": [student.to_dict() for student in removedstudents],
+                                "default": [student.to_dict() for student in default],
+                                "new": [student.to_dict() for student in newstudents]})
+
+
+class TeacherStudentsOnDate():
+
+    def on_get(self, req, resp, teacherid, date):
+        teacher = sess.query(ms.Teacher).get(teacherid)
+        if teacher is None:
+            resp.status = falcon.HTTP_404
+            resp.body = "A teacher with the idea of %s was not found." % teacherid
+            return
+        date = convert_time(date)
+        default = teacher.home_room_students
+        removedstudents = sess.query(ms.Student).join(ms.Schedule).filter(ms.Student.home_room_teacher_id == teacherid,
+                                                                          ms.Schedule.date == date)
+        default = [e for e in default if e not in removedstudents]
+        newstudents = sess.query(ms.Student).join(ms.Schedule).filter(ms.Schedule.teacher_id == teacherid,
+                                                                      ms.Schedule.date == date)
         resp.status = falcon.HTTP_200
         resp.body = json.dumps({"moved": [student.to_dict() for student in removedstudents],
                                 "default": [student.to_dict() for student in default],
@@ -169,7 +193,7 @@ class SchedulesToday():
 class SchedulesOnDate():
 
     def on_get(self, req, resp, date):
-        schedules = sess.query(ms.Schedule).filter_by(date=datetime.datetime.strptime(date, "%m-%d-%y"))
+        schedules = sess.query(ms.Schedule).filter_by(date=convert_time(date))
         resp.status = falcon.HTTP_200
         resp.body = json.dumps([schedule.to_dict() for schedule in schedules])
 

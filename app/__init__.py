@@ -37,6 +37,7 @@ app.add_route("/student/search/", rs.StudentCompleteSearch())
 app.add_route("/teachers/", rs.Teachers())
 app.add_route("/teacher/{teacherid}/", rs.Teacher())
 app.add_route("/teacher/{teacherid}/students/homeroom/", rs.TeacherStudentsHomeroom())
+app.add_route("/teacher/{teacherid}/students/{date}/", rs.TeacherStudentsOnDate())
 app.add_route("/teacher/{teacherid}/students/today/", rs.TeacherStudentsToday())
 app.add_route("/teacher/search/", rs.TeacherCompleteSearch())
 
