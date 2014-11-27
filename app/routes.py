@@ -103,11 +103,11 @@ class TeacherStudentsToday():
             return
         today = datetime.date.today()
         default = teacher.home_room_students
-        removedstudents = sess.query(ms.Schedule).filter(ms.Student.home_room_teacher_id == teacherid,
-                                                         ms.Schedule.date == today)
-        default = default.outerjoin(removedstudents)
-        newstudents = sess.query(ms.Schedule).filter(ms.Schedule.teacher_id == teacherid,
-                                                     ms.Schedule.date == today)
+        removedstudents = sess.query(ms.Student).join(ms.Schedule).filter(ms.Student.home_room_teacher_id == teacherid,
+                                                                          ms.Schedule.date == today)
+        default = [e for e in default if e not in removedstudents]
+        newstudents = sess.query(ms.Student).join(ms.Schedule).filter(ms.Schedule.teacher_id == teacherid,
+                                                                      ms.Schedule.date == today)
         resp.status = falcon.HTTP_200
         resp.body = json.dumps({"moved": [student.to_dict() for student in removedstudents],
                                 "default": [student.to_dict() for student in default],
