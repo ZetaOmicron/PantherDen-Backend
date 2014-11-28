@@ -205,10 +205,18 @@ class SchedulesWithStudent():
         resp.status = falcon.HTTP_200
         resp.body = json.dumps([schedule.to_dict() for schedule in schedules])
 
+
 class SchedulesWithHomeRoomTeacher():
 
-    def on_get(self, req, resp, studentid):
-        schedules = sess.query(ms.Schedule).filter_by(student_id=studentid)
+    def on_get(self, req, resp, teacherid):
+        schedules = sess.query(ms.Schedule).join(ms.Student).filter_by(home_room_teacher_id=teacherid)
         resp.status = falcon.HTTP_200
         resp.body = json.dumps([schedule.to_dict() for schedule in schedules])
 
+
+class SchedulesWithNewTeacher():
+
+    def on_get(self, req, resp, teacherid):
+        schedules = sess.query(ms.Schedule).filter_by(teacher_id=teacherid)
+        resp.status = falcon.HTTP_200
+        resp.body = json.dumps([schedule.to_dict() for schedule in schedules])
