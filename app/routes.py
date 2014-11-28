@@ -184,7 +184,7 @@ class Schedules():
 class SchedulesToday():
 
     def on_get(self, req, resp):
-        today = datetime.datetime.today()
+        today = datetime.date.today()
         schedules = sess.query(ms.Schedule).filter_by(date=today)
         resp.status = falcon.HTTP_200
         resp.body = json.dumps([schedule.to_dict() for schedule in schedules])
