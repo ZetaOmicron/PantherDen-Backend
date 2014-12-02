@@ -6,10 +6,6 @@ import models as ms
 from app import session as sess
 
 
-def convert_time(s):
-    return datetime.datetime.strptime(s, "%m-%d-%y").date()
-
-
 class Student():
 
     def on_get(self, req, resp, studentid):
@@ -119,13 +115,13 @@ class TeacherStudentsToday():
 
 class TeacherStudentsOnDate():
 
-    def on_get(self, req, resp, teacherid, date):
+    def on_get(self, req, resp, teacherid, year, month, day):
         teacher = sess.query(ms.Teacher).get(teacherid)
         if teacher is None:
             resp.status = falcon.HTTP_404
             resp.body = "A teacher with the idea of %s was not found." % teacherid
             return
-        date = convert_time(date)
+        date = datetime.date(year, month, day)
         default = teacher.home_room_students
         removedstudents = sess.query(ms.Student).join(ms.Schedule).filter(ms.Student.home_room_teacher_id == teacherid,
                                                                           ms.Schedule.date == date)
@@ -190,10 +186,27 @@ class SchedulesToday():
         resp.body = json.dumps([schedule.to_dict() for schedule in schedules])
 
 
-class SchedulesOnDate():
+class SchedulesInYear():
 
-    def on_get(self, req, resp, date):
-        schedules = sess.query(ms.Schedule).filter_by(date=convert_time(date))
+    def on_get(self, req, resp, year):
+        schedules = sess.query(ms.Schedule).filter(ms.Schedule.date.year == year)
+        resp.status = falcon.HTTP_200
+        resp.body = json.dumps([schedule.to_dict() for schedule in schedules])
+
+
+class SchedulesInMonth():
+
+    def on_get(self, req, resp, year, month):
+        schedules = sess.query(ms.Schedule).filter(ms.Schedule.date.year == year,
+                                                   ms.Schedule.date.month == month)
+        resp.status = falcon.HTTP_200
+        resp.body = json.dumps([schedule.to_dict() for schedule in schedules])
+
+
+class SchedulesOnDay():
+
+    def on_get(self, req, resp, year, month, day):
+        schedules = sess.query(ms.Schedule).filter_by(date=datetime.date(year, month, day))
         resp.status = falcon.HTTP_200
         resp.body = json.dumps([schedule.to_dict() for schedule in schedules])
 
