@@ -5,6 +5,8 @@ import falcon
 import models as ms
 from app import session as sess
 
+from sqlalchemy.sql.expression import extract
+
 
 class Student():
 
@@ -189,7 +191,7 @@ class SchedulesToday():
 class SchedulesInYear():
 
     def on_get(self, req, resp, year):
-        schedules = sess.query(ms.Schedule).filter(ms.Schedule.date.year == year)
+        schedules = sess.query(ms.Schedule).filter(extract("year", ms.Schedule.date) == year)
         resp.status = falcon.HTTP_200
         resp.body = json.dumps([schedule.to_dict() for schedule in schedules])
 
@@ -197,8 +199,8 @@ class SchedulesInYear():
 class SchedulesInMonth():
 
     def on_get(self, req, resp, year, month):
-        schedules = sess.query(ms.Schedule).filter(ms.Schedule.date.year == year,
-                                                   ms.Schedule.date.month == month)
+        schedules = sess.query(ms.Schedule).filter(extract("year", ms.Schedule.date) == year,
+                                                   extract("month", ms.Schedule.date) == month)
         resp.status = falcon.HTTP_200
         resp.body = json.dumps([schedule.to_dict() for schedule in schedules])
 
@@ -206,7 +208,7 @@ class SchedulesInMonth():
 class SchedulesOnDay():
 
     def on_get(self, req, resp, year, month, day):
-        schedules = sess.query(ms.Schedule).filter_by(date=datetime.date(year, month, day))
+        schedules = sess.query(ms.Schedule).filter_by(date=datetime.date(int(year), int(month), int(day)))
         resp.status = falcon.HTTP_200
         resp.body = json.dumps([schedule.to_dict() for schedule in schedules])
 
