@@ -40,6 +40,7 @@ app.add_route("/teacher/{teacherid}/students/homeroom/", rs.TeacherStudentsHomer
 app.add_route("/teacher/{teacherid}/students/{year}/{month}/{day}/", rs.TeacherStudentsOnDate())
 app.add_route("/teacher/{teacherid}/students/today/", rs.TeacherStudentsToday())
 app.add_route("/teacher/search/", rs.TeacherCompleteSearch())
+app.add_route("/teacher/register/", rs.TeacherRegister())
 
 app.add_route("/schedules/", rs.Schedules())
 app.add_route("/schedules/today/", rs.SchedulesToday())

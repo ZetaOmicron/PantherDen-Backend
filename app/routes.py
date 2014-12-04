@@ -62,6 +62,21 @@ class StudentCompleteSearch():
                                 "amount": count})
 
 
+class TeacherRegister():
+
+    def on_get(self, req, resp):
+        body = req.stream.read()
+        body = json.loads(body)
+        if sess.query(ms.Teacher).get(body["id"]) is None:
+            resp.status = falcon.HTTP_409
+            resp.body = "That id is already taken"
+            return
+        teach = ms.Teacher(body["id"], body["first_name"], body["last_name"], body["room_id"])
+        sess.add(teach)
+        resp.status = falcon.HTTP_200
+        resp.body = json.dumps(teach.to_dict())
+
+
 class Teacher():
 
     def on_get(self, req, resp, teacherid):
