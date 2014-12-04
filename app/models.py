@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Date, ForeignKey
+from sqlalchemy import Column, Integer, String, Date, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
 from app import Base
 
@@ -66,11 +66,13 @@ class Schedule(Base):
     student_id = Column(Integer, ForeignKey("student.id"), primary_key=True)
     teacher_id = Column(String(30), ForeignKey("teacher.id"), primary_key=True)
     date = Column(Date, primary_key=True)
+    present = Column(Boolean)
 
     def __init__(self, student_id, teacher_id, date):
         self.student_id = student_id
         self.teacher_id = teacher_id
         self.date = date
+        self.present = False
 
     def to_dict(self):
         return {"student_id": self.student_id,

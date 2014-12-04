@@ -34,12 +34,16 @@ app.add_route("/students/", rs.Students())
 app.add_route("/student/{studentid}/", rs.Student())
 app.add_route("/student/search/", rs.StudentCompleteSearch())
 
+app.add_route("/student/schedule/", rs.ScheduleStudent())
+app.add_route("/student/unschedule/", rs.UnscheduleStudent)
+
 app.add_route("/teachers/", rs.Teachers())
 app.add_route("/teacher/{teacherid}/", rs.Teacher())
 app.add_route("/teacher/{teacherid}/students/homeroom/", rs.TeacherStudentsHomeroom())
 app.add_route("/teacher/{teacherid}/students/{year}/{month}/{day}/", rs.TeacherStudentsOnDate())
 app.add_route("/teacher/{teacherid}/students/today/", rs.TeacherStudentsToday())
 app.add_route("/teacher/search/", rs.TeacherCompleteSearch())
+
 app.add_route("/teacher/register/", rs.TeacherRegister())
 
 app.add_route("/schedules/", rs.Schedules())

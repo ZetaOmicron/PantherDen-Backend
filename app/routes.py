@@ -64,7 +64,7 @@ class StudentCompleteSearch():
 
 class TeacherRegister():
 
-    def on_get(self, req, resp):
+    def on_post(self, req, resp):
         body = req.stream.read()
         body = json.loads(body)
         if sess.query(ms.Teacher).get(body["id"]) is None:
@@ -184,6 +184,39 @@ class Schedule():
 
     def on_get(self, req, resp, student_id, new_teacher_id, date):
         pass
+
+
+class ScheduleStudent():
+
+    def on_post(self, req, resp):
+        body = req.stream.read()
+        body = json.loads(body)
+        stid = body["student_id"]
+        tid = body["teacher_ID"]
+        date = datetime.datetime.strptime(body["date"], "%Y-%m-%d").date()
+        if sess.query(ms.Schedule).filter(student_id=stid, date=date).first() is None:
+            resp.status = falcon.HTTP_409
+            resp.body = "A schedule already exists on this date."
+        sess.add(ms.Schedule(stid, tid, date))
+        resp.status = falcon.HTTP_200
+        resp.body = "Successfully Schedule Student"
+
+
+class UnscheduleStudent():
+
+    def on_delete(self, req, resp):
+        body = req.stream.read()
+        body = json.loads(body)
+        stid = body["student_id"]
+        tid = body["teacher_ID"]
+        date = datetime.datetime.strptime(body["date"], "%Y-%m-%d").date()
+        schedule = sess.query(ms.Schedule).get(stid, tid, date)
+        if schedule is None:
+            resp.status = falcon.HTTP_400
+            resp.body = "Student Not Found"
+        sess.delete(schedule)
+        resp.status = falcon.HTTP_200
+        resp.body = "Schedule Successfully Removed"
 
 
 class Schedules():
