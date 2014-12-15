@@ -66,18 +66,19 @@ class Schedule(Base):
     student_id = Column(Integer, ForeignKey("student.id"), primary_key=True)
     teacher_id = Column(String(30), ForeignKey("teacher.id"), primary_key=True)
     date = Column(Date, primary_key=True)
-    present = Column(Boolean)
+    absent = Column(Boolean)
 
     def __init__(self, student_id, teacher_id, date):
         self.student_id = student_id
         self.teacher_id = teacher_id
         self.date = date
-        self.present = False
+        self.absent = False
 
     def to_dict(self):
         return {"student_id": self.student_id,
                 "teacher_id": self.teacher_id,
-                "date": str(self.date)}
+                "date": str(self.date),
+                "absent": self.absent}
 
     def __repr__(self):
         return "<Schedule %r, %r, %r>" % self.student_id, self.teacher_id, self.date

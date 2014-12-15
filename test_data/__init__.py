@@ -9,5 +9,6 @@ students = [ms.Student(*s.split(","))
 teachers = [ms.Teacher(*t.split(","))
             for t in open("test_data/teachers.csv").read().splitlines()[1:]]
 
-schedules = [ms.Schedule(s[0], s[1], datetime.strptime(s[2], "%Y-%m-%d").date())
+schedules = [ms.Schedule(s[0], s[1], (datetime.today() if s[2] == "today"
+                                      else datetime.strptime(s[2], "%Y-%m-%d").date()))
              for s in [l.split(",") for l in open("test_data/schedules.csv").read().splitlines()[1:]]]
