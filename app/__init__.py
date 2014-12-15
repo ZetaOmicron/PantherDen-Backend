@@ -35,7 +35,10 @@ app.add_route("/student/{studentid}/", rs.Student())
 app.add_route("/student/search/", rs.StudentCompleteSearch())
 
 app.add_route("/student/schedule/", rs.ScheduleStudent())
-app.add_route("/student/unschedule/", rs.UnscheduleStudent)
+app.add_route("/student/request/", rs.RequestScheduleStudent())
+app.add_route("/student/unschedule/", rs.UnscheduleStudent())
+
+app.add_route("/students/absent/today/", rs.StudentsAbsentToday())
 
 app.add_route("/teachers/", rs.Teachers())
 app.add_route("/teacher/{teacherid}/", rs.Teacher())

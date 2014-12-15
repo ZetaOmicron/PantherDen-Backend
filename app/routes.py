@@ -75,6 +75,30 @@ class ScheduleStudent():
         if sess.query(ms.Schedule).filter(student_id=stid, date=date).first() is None:
             resp.status = falcon.HTTP_409
             resp.body = "A schedule already exists on this date."
+            return
+        sess.add(ms.Schedule(stid, tid, date))
+        sess.commit()
+        resp.status = falcon.HTTP_200
+        resp.body = "Successfully Schedule Student"
+
+
+class RequestScheduleStudent():
+
+    def on_post(self, req, resp):
+        body = req.stream.read()
+        body = json.loads(body)
+        stid = body["student_id"]
+        tid = body["teacher_ID"]
+        date = datetime.datetime.strptime(body["date"], "%Y-%m-%d").date()
+        today = datetime.date.today()
+        if (date-today).days < 2:
+            resp.status = falcon.HTTP_409
+            resp.body = "You have to schedule your students two days in advance."
+            return
+        if sess.query(ms.Schedule).filter(student_id=stid, date=date).first() is None:
+            resp.status = falcon.HTTP_409
+            resp.body = "A schedule already exists on this date."
+            return
         sess.add(ms.Schedule(stid, tid, date))
         sess.commit()
         resp.status = falcon.HTTP_200
@@ -95,8 +119,23 @@ class UnscheduleStudent():
             resp.body = "Student Not Found"
         sess.delete(schedule)
         sess.commit()
-        resp.status = falcon.HTTP_200
         resp.body = "Schedule Successfully Removed"
+
+
+class StudentsAbsentToday():
+
+    def on_post(self, req, resp):
+        body = req.stream.read()
+        body = json.loads(body)
+        tid = body["teacher_id"]
+        today = datetime.date.today()
+        for stid in body["moved"]:
+            sched = sess.query(ms.Schedule).get(int(stid), tid, today)
+            sched.absent = True
+        sess.commit()
+        resp.status = falcon.HTTP_200
+        resp.body = "Attendance Successfully Taken"
+
 
 
 # Teachers
