@@ -59,4 +59,3 @@ PantherDen-Backend.iml
 
 # PantherDen-Backend
 *.db
-test_data/*.csv
