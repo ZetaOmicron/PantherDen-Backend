@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, Date, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
 from app import Base
+import datetime
 
 
 class Student(Base):
@@ -96,7 +97,7 @@ class Absence(Base):
     student_id = Column(Integer, ForeignKey("student.id"), primary_key=True)
     date = Column(Date, primary_key=True)
 
-    def __init__(self, student_id, date):
+    def __init__(self, student_id, date=datetime.date.today()):
         self.student_id = student_id
         self.date = date
 

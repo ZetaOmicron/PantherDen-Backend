@@ -136,13 +136,18 @@ class UnscheduleStudent():
 class StudentsAbsentToday():
 
     def on_post(self, req, resp):
-        body = req.stream.read()
-        body = json.loads(body)
-        tid = body["teacher_id"]
         today = datetime.date.today()
-        for stid in body["moved"]:
-            sched = sess.query(ms.Schedule).get(int(stid), tid, today)
-            sched.absent = True
+        absent = req.get_param_as_list("absent")
+        req.log_error(" ".join(absent))
+        present = req.get_param_as_list("present")
+        req.log_error(" ".join(present))
+        for stid in absent:
+            if sess.query(ms.Absence).get((stid, today)) is None:
+                sess.add(ms.Absence(stid, today))
+        for stid in present:
+            temp = sess.query(ms.Absence).get((stid, today))
+            if temp is not None:
+                sess.delete(temp)
         sess.commit()
         resp.status = falcon.HTTP_200
         resp.body = "Attendance Successfully Taken"
@@ -213,10 +218,21 @@ class TeacherStudentsToday():
         default = [e for e in default if e not in removedstudents]
         newstudents = sess.query(ms.Student).join(ms.Schedule).filter(ms.Schedule.teacher_id == teacherid,
                                                                       ms.Schedule.date == today)
+        moved = [student.to_dict() for student in removedstudents]
+        default = [student.to_dict() for student in default]
+        new = [student.to_dict() for student in newstudents]
+        temp_list = list(default)
+        temp_list.extend(new)
+        for student_dict in temp_list:
+            req.log_error(str(student_dict))
+            if sess.query(ms.Absence).get((student_dict["id"], today)) is not None:
+                student_dict["absent"] = True
+                req.log_error(str(student_dict))
+                req.log_error("test")
         resp.status = falcon.HTTP_200
-        resp.body = json.dumps({"moved": [student.to_dict() for student in removedstudents],
-                                "default": [student.to_dict() for student in default],
-                                "new": [student.to_dict() for student in newstudents]})
+        resp.body = json.dumps({"moved": moved,
+                                "default": default,
+                                "new": new})
 
 
 class TeacherStudentsOnDate():
