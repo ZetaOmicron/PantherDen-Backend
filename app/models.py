@@ -13,8 +13,9 @@ class Student(Base):
     inactive = Column(Boolean())
 
     schedules = relationship("Schedule", backref="student")
+    absences = relationship("Absence", backref="student")
 
-    completable = ["first_name", "last_name"]
+    completable = ["first_name", "last_name", "id"]
 
     def __init__(self, id, first_name, last_name, home_room_teacher_id):
         self.id = id
@@ -46,7 +47,7 @@ class Teacher(Base):
     home_room_students = relationship("Student", backref="teacher")
     schedules = relationship("Schedule", backref="teacher")
 
-    completable = ["first_name", "last_name"]
+    completable = ["first_name", "last_name", "id"]
 
     def __init__(self, id, first_name, last_name, room_id):
         self.id = id
@@ -72,24 +73,39 @@ class Schedule(Base):
     teacher_id = Column(String(30), ForeignKey("teacher.id"), primary_key=True)
     date = Column(Date, primary_key=True)
     comment = Column(String(256))
-    absent = Column(Boolean)
 
-    def __init__(self, student_id, teacher_id, date):
+    def __init__(self, student_id, teacher_id, date, comment="(NONE)"):
         self.student_id = student_id
         self.teacher_id = teacher_id
         self.date = date
-        self.comment = "(NONE)"
-        self.absent = False
+        self.comment = comment
 
     def to_dict(self):
         return {"student_id": self.student_id,
                 "teacher_id": self.teacher_id,
                 "date": str(self.date),
-                "comment": self.comment,
-                "absent": self.absent}
+                "comment": self.comment}
 
     def __repr__(self):
         return "<Schedule %r, %r, %r>" % self.student_id, self.teacher_id, self.date
+
+
+class Absence(Base):
+    __tablename__ = "absence"
+
+    student_id = Column(Integer, ForeignKey("student.id"), primary_key=True)
+    date = Column(Date, primary_key=True)
+
+    def __init__(self, student_id, date):
+        self.student_id = student_id
+        self.date = date
+
+    def to_dict(self):
+        return {"student_id": self.student_id,
+                "date": str(self.date)}
+
+    def __repr__(self):
+        return "<Absence %r, %r>" % self.student_id, self.date
 
 
 def create_metadata(engine):

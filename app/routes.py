@@ -64,6 +64,12 @@ class StudentCompleteSearch():
                                 "amount": count})
 
 
+class EditStudent():
+
+    def on_put(self, req, resp):
+        pass
+
+
 class ScheduleStudent():
 
     def on_post(self, req, resp):
@@ -88,7 +94,12 @@ class RequestScheduleStudent():
         body = req.stream.read()
         body = json.loads(body)
         stid = body["student_id"]
-        tid = body["teacher_ID"]
+        tid = body["teacher_id"]
+        comment = body["comment"]
+        if len(comment) > 256:
+            resp.status = falcon.HTTP_500
+            resp.body = "That comment is too long."
+            return
         date = datetime.datetime.strptime(body["date"], "%Y-%m-%d").date()
         today = datetime.date.today()
         if (date-today).days < 2:
@@ -99,7 +110,7 @@ class RequestScheduleStudent():
             resp.status = falcon.HTTP_409
             resp.body = "A schedule already exists on this date."
             return
-        sess.add(ms.Schedule(stid, tid, date))
+        sess.add(ms.Schedule(stid, tid, date, comment))
         sess.commit()
         resp.status = falcon.HTTP_200
         resp.body = "Successfully Schedule Student"
@@ -135,7 +146,6 @@ class StudentsAbsentToday():
         sess.commit()
         resp.status = falcon.HTTP_200
         resp.body = "Attendance Successfully Taken"
-
 
 
 # Teachers
@@ -308,6 +318,13 @@ class SchedulesOnDay():
         schedules = sess.query(ms.Schedule).filter_by(date=datetime.date(int(year), int(month), int(day)))
         resp.status = falcon.HTTP_200
         resp.body = json.dumps([schedule.to_dict() for schedule in schedules])
+
+
+class SchedulesInDateRange():
+
+    def on_get(self, req, resp):
+        qs = req.query_string
+        # TODO FINISH THIS
 
 
 class SchedulesWithStudent():
