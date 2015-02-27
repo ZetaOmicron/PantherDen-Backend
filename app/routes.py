@@ -138,9 +138,9 @@ class StudentsAbsentToday():
     def on_post(self, req, resp):
         today = datetime.date.today()
         absent = req.get_param_as_list("absent")
-        req.log_error(" ".join(absent))
+        # req.log_error(" ".join(absent))
         present = req.get_param_as_list("present")
-        req.log_error(" ".join(present))
+        # req.log_error(" ".join(present))
         for stid in absent:
             if sess.query(ms.Absence).get((stid, today)) is None:
                 sess.add(ms.Absence(stid, today))
@@ -224,11 +224,10 @@ class TeacherStudentsToday():
         temp_list = list(default)
         temp_list.extend(new)
         for student_dict in temp_list:
-            req.log_error(str(student_dict))
+            # req.log_error(str(student_dict))
             if sess.query(ms.Absence).get((student_dict["id"], today)) is not None:
                 student_dict["absent"] = True
-                req.log_error(str(student_dict))
-                req.log_error("test")
+                # req.log_error(str(student_dict))
         resp.status = falcon.HTTP_200
         resp.body = json.dumps({"moved": moved,
                                 "default": default,
