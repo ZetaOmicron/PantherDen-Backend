@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 import falcon
 import sqlalchemy
 from sqlalchemy.orm import sessionmaker
@@ -7,7 +8,7 @@ from config import *
 engine = sqlalchemy.create_engine(test_database_string if test_run else database_string)
 Base = declarative_base()
 
-import models
+import app.models
 
 if test_run:
     models.drop_metadata(engine)
@@ -24,11 +25,11 @@ if test_run:
     session.add_all(schedules)
     session.commit()
 
-import hooks as hs
+import app.hooks as hs
 
 app = falcon.API(media_type="application/json", before=[hs.set_access_origin])
 
-import routes as rs
+import app.routes as rs
 
 app.add_route("/students/", rs.Students())
 app.add_route("/student/{studentid}/", rs.Student())

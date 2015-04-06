@@ -1,8 +1,11 @@
+from __future__ import absolute_import
+
 import json
 import datetime
 
 import falcon
-import models as ms
+
+import app.models as ms
 from app import session as sess
 
 from sqlalchemy.sql.expression import extract
