@@ -77,7 +77,15 @@ class ScheduleStudent():
 
     def on_post(self, req, resp):
         stid = req.get_param("student_id")
+        if stid is None:
+            resp.status = falcon.HTTP_500 # May need to change this
+            resp.body = "A valid student_id must be supplied."
+            return
         tid = req.get_param("teacher_id")
+        if tid is None:
+            resp.status = falcon.HTTP_500 # May need to change this
+            resp.body = "A valid teacher_id must be supplied."
+            return
         date = req.get_param("date")
         date = datetime.datetime.strptime(date, "%Y-%m-%d").date()
         if sess.query(ms.Schedule).filter(student_id=stid, date=date).first() is None:
