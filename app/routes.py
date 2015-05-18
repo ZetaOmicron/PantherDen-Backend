@@ -76,11 +76,10 @@ class EditStudent():
 class ScheduleStudent():
 
     def on_post(self, req, resp):
-        body = req.stream.read()
-        body = json.loads(body)
-        stid = body["student_id"]
-        tid = body["teacher_ID"]
-        date = datetime.datetime.strptime(body["date"], "%Y-%m-%d").date()
+        stid = req.get_param("student_id")
+        tid = req.get_param("teacher_id")
+        date = req.get_param("date")
+        date = datetime.datetime.strptime(date, "%Y-%m-%d").date()
         if sess.query(ms.Schedule).filter(student_id=stid, date=date).first() is None:
             resp.status = falcon.HTTP_409
             resp.body = "A schedule already exists on this date."
