@@ -168,13 +168,18 @@ class StudentsAbsentToday():
 class TeacherRegister():
 
     def on_post(self, req, resp):
-        body = req.stream.read()
-        body = json.loads(body)
-        if sess.query(ms.Teacher).get(body["id"]) is None:
+        teacher_id = req.get_param("id")
+        if sess.query(ms.Teacher).get(teacher_id) is None:
             resp.status = falcon.HTTP_409
             resp.body = "That id is already taken"
             return
-        teach = ms.Teacher(body["id"], body["first_name"], body["last_name"], body["room_id"])
+        first_name, last_name, room_id =\
+            req.get_param("first_name"), req.get_param("last_name"), req.get_param("room_id")
+        if first_name is None or last_name is None or room_id is None:
+            resp.status = falcon.HTTP_500
+            resp.body = "A first_name, last_name, and room_id are required."
+            return
+        teach = ms.Teacher(teacher_id, first_name, last_name, room_id)
         sess.add(teach)
         sess.commit()
         resp.status = falcon.HTTP_200
