@@ -101,16 +101,15 @@ class ScheduleStudent():
 class RequestScheduleStudent():
 
     def on_post(self, req, resp):
-        body = req.stream.read()
-        body = json.loads(body)
-        stid = body["student_id"]
-        tid = body["teacher_id"]
-        comment = body["comment"]
+        stid = req.get_param("student_id")
+        tid = req.get_param("teacher_id")
+        comment = req.get_param("comment")
+        date = req.get_param("date")
         if len(comment) > 256:
             resp.status = falcon.HTTP_500
             resp.body = "That comment is too long."
             return
-        date = datetime.datetime.strptime(body["date"], "%Y-%m-%d").date()
+        date = datetime.datetime.strptime(date, "%Y-%m-%d").date()
         today = datetime.date.today()
         if (date-today).days < 2:
             resp.status = falcon.HTTP_409
@@ -131,9 +130,10 @@ class UnscheduleStudent():
     def on_delete(self, req, resp):
         body = req.stream.read()
         body = json.loads(body)
-        stid = body["student_id"]
-        tid = body["teacher_ID"]
-        date = datetime.datetime.strptime(body["date"], "%Y-%m-%d").date()
+        stid = req.get_param("student_id")
+        tid = req.get_param("teacher_id")
+        date = req.get_param("date")
+        date = datetime.datetime.strptime(date, "%Y-%m-%d").date()
         schedule = sess.query(ms.Schedule).get(stid, tid, date)
         if schedule is None:
             resp.status = falcon.HTTP_400
