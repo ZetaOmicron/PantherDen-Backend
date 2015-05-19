@@ -303,9 +303,20 @@ class TeacherCompleteSearch():
 
 class Schedule():
 
-    #TODO finish this
-    def on_get(self, req, resp, student_id, new_teacher_id, date):
-        pass
+    def on_get(self, req, resp):
+        teacher_id, student_id, date =\
+            req.get_param("teacher_id"), req.get_param("student_id"), req.get_param("date")
+        date = datetime.datetime.strptime(date, "%Y-%m-%d").date()
+        new_teacher = sess.query(ms.Teacher).get(teacher_id)
+        student = sess.query(ms.Student).get(student_id)
+        old_teacher = sess.query(ms.Teacher).get(student.home_room_teacher_id)
+        schedule = sess.query(ms.Schedule).get((student_id, teacher_id, date))
+        dict = schedule.to_dict()
+        dict["student"] = student.to_dict()
+        dict["new_teacher"] = new_teacher.to_dict()
+        dict["old_teacher"] = old_teacher.to_dict()
+        resp.status = falcon.HTTP_200
+        resp.body = json.dumps(dict)
 
 
 class Schedules():
